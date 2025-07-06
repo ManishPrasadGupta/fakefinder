@@ -1,5 +1,4 @@
 
-
 var currentUrl = window.location.href;
 
 // ==== UI Elements ====
