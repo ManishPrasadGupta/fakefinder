@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Site Safety Check</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="safe-card" class="card hidden">
+    <div class="card-title">This site is safe</div>
+    <div class="card-actions">
+      <button id="mark-unsafe-btn">unsafe</button>
+      <button id="block-btn">block</button>
+    </div>
+  </div>
+  <div id="unsafe-card" class="card hidden">
+    <div class="card-title">This site is unsafe</div>
+    <div class="card-actions">
+      <button id="mark-safe-btn">safe</button>
+      <button id="unblock-btn">Unblock</button>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
