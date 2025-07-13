@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { db, auth } from "../firebase-config";
-import { collection, getDocs, addDoc, deleteDoc, doc, Timestamp } from "firebase/firestore";
+import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, Timestamp } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 
 export default function BlacklistPage() {
@@ -16,6 +16,7 @@ export default function BlacklistPage() {
   });
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
+  const [editingId, setEditingId] = useState(null);
 
   const fetchBlacklist = async () => {
     setLoading(true);
@@ -33,20 +34,34 @@ export default function BlacklistPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const addToBlacklist = async (e) => {
+  const addOrEditBlacklist = async (e) => {
     e.preventDefault();
     if (form.url) {
-      await addDoc(collection(db, "blacklistedUrls"), {
-        url: form.url,
-        name: form.name,
-        reason: form.reason,
-        "reported by": form.reportedBy,
-        safe: Number(form.safe),
-        unsafe: Number(form.unsafe),
-        "Blacklisted on": form.blacklistedOn
-          ? Timestamp.fromDate(new Date(form.blacklistedOn))
-          : Timestamp.now(),
-      });
+      if (editingId) {
+        await updateDoc(doc(db, "blacklistedUrls", editingId), {
+          url: form.url,
+          name: form.name,
+          reason: form.reason,
+          "reported by": form.reportedBy,
+          safe: Number(form.safe),
+          unsafe: Number(form.unsafe),
+          "Blacklisted on": form.blacklistedOn
+            ? Timestamp.fromDate(new Date(form.blacklistedOn))
+            : Timestamp.now(),
+        });
+      } else {
+        await addDoc(collection(db, "blacklistedUrls"), {
+          url: form.url,
+          name: form.name,
+          reason: form.reason,
+          "reported by": form.reportedBy,
+          safe: Number(form.safe),
+          unsafe: Number(form.unsafe),
+          "Blacklisted on": form.blacklistedOn
+            ? Timestamp.fromDate(new Date(form.blacklistedOn))
+            : Timestamp.now(),
+        });
+      }
       setForm({
         url: "",
         name: "",
@@ -56,8 +71,37 @@ export default function BlacklistPage() {
         unsafe: 0,
         blacklistedOn: "",
       });
+      setEditingId(null);
       fetchBlacklist();
     }
+  };
+
+  const startEdit = (item) => {
+    setEditingId(item.id);
+    setForm({
+      url: item.url || "",
+      name: item.name || "",
+      reason: item.reason || "",
+      reportedBy: item["reported by"] || item.reportedBy || "",
+      safe: item.safe || 0,
+      unsafe: item.unsafe || 0,
+      blacklistedOn: item["Blacklisted on"]?.toDate
+        ? item["Blacklisted on"].toDate().toISOString().slice(0, 16)
+        : "",
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setForm({
+      url: "",
+      name: "",
+      reason: "",
+      reportedBy: "",
+      safe: 0,
+      unsafe: 0,
+      blacklistedOn: "",
+    });
   };
 
   const removeFromBlacklist = async (id) => {
@@ -70,7 +114,7 @@ export default function BlacklistPage() {
   return (
     <div className="max-w-4xl mx-auto my-8 px-6 py-8 bg-gray-900 text-white rounded-xl shadow-lg">
       <form
-        onSubmit={addToBlacklist}
+        onSubmit={addOrEditBlacklist}
         className="mb-8 flex flex-wrap gap-3 items-center"
       >
         <input
@@ -118,8 +162,17 @@ export default function BlacklistPage() {
           type="submit"
           className="bg-blue-600 hover:bg-blue-700 font-semibold px-6 py-2 rounded-lg shadow transition text-white"
         >
-          Add
+          {editingId ? "Update" : "Add"}
         </button>
+        {editingId && (
+          <button
+            type="button"
+            onClick={cancelEdit}
+            className="bg-gray-700 hover:bg-gray-800 font-semibold px-6 py-2 rounded-lg shadow transition text-white ml-2"
+          >
+            Cancel Edit
+          </button>
+        )}
       </form>
       {loading ? (
         <div className="flex justify-center items-center h-32">
@@ -151,6 +204,12 @@ export default function BlacklistPage() {
                   >
                     {item.url}
                   </span>
+                  <button
+                    onClick={() => startEdit(item)}
+                    className="ml-5 bg-gray-800 hover:bg-yellow-600 text-white px-4 py-1.5 text-base rounded-lg transition-colors border-none"
+                  >
+                    Edit
+                  </button>
                   <button
                     onClick={() => removeFromBlacklist(item.id)}
                     className="ml-5 bg-gray-800 hover:bg-red-700 text-white px-4 py-1.5 text-base rounded-lg transition-colors border-none"

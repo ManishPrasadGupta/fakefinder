@@ -4,8 +4,7 @@ var currentUrl = window.location.href;
 // ==== UI Elements ====
 const alertElm = document.createElement("div");
 alertElm.title = "⚠️ This is a malicious site.";
-alertElm.textContent = "⚠️"; // Unicode warning symbol
-
+alertElm.textContent = "⚠️"; 
 const safeElm = document.createElement("div");
 safeElm.textContent = "\u2705";
 
