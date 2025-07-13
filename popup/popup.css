@@ -3,7 +3,7 @@ html, body {
   height: 134px;
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #88e5e5 0%, #f6d365 100%);
+  background: #88e5e5;
   overflow: hidden;
   font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
 }
@@ -16,7 +16,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #88e5e5 0%, #f6d365 100%);
+  background: #88e5e5;
   overflow: hidden;
 }
 
@@ -27,7 +27,7 @@ body {
   max-height: 90vh;
   border-radius: 18px;
   /* Match card background to body for seamless look */
-  background: linear-gradient(135deg, #88e5e5 0%, #f6d365 100%);
+  background: #88e5e5;
   /* Subtle shadow for slight elevation */
   box-shadow: 0 2px 8px rgba(0,0,0,0.07);
   padding: 18px 16px 14px 16px;
