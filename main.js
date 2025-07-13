@@ -165,7 +165,7 @@ safeElm.addEventListener("mouseenter", () => {
 chrome.storage.local.get(['userDefinedWhitelist', 'userDefinedBlacklist'], function(lists) {
   const whitelist = lists.userDefinedWhitelist || [];
   const blacklist = lists.userDefinedBlacklist || [];
-  const domain = extractDomain(currentUrl);
+  const domain = extractDomain(currentUrl);   
 
   if (whitelist.includes(domain)) {
     document.body.appendChild(safeElm);
